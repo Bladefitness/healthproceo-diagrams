@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { Excalidraw } from "@excalidraw/excalidraw";
 
@@ -49,6 +49,15 @@ function DiagramViewer({ name }) {
       .catch((e) => setError(e.message));
   }, [name]);
 
+  const handleExcalidrawAPI = useCallback((api) => {
+    if (api) {
+      // Give elements time to render, then scroll to fit them all
+      setTimeout(() => {
+        api.scrollToContent(api.getSceneElements(), { fitToContent: true });
+      }, 300);
+    }
+  }, []);
+
   if (error) return <div className="error">{error}</div>;
   if (!diagramData) return <div className="loading">Loading diagram...</div>;
 
@@ -60,6 +69,7 @@ function DiagramViewer({ name }) {
       </div>
       <div className="viewer-canvas">
         <Excalidraw
+          excalidrawAPI={handleExcalidrawAPI}
           initialData={{
             elements: diagramData.elements || [],
             appState: {
@@ -67,7 +77,6 @@ function DiagramViewer({ name }) {
               viewBackgroundColor:
                 diagramData.appState?.viewBackgroundColor || "#ffffff",
             },
-            scrollToContent: true,
           }}
           theme="dark"
         />
