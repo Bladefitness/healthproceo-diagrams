@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { Excalidraw } from "@excalidraw/excalidraw";
+import "@excalidraw/excalidraw/index.css";
 
 function formatName(slug) {
   return slug
@@ -107,6 +108,7 @@ function DiagramViewer({ name }) {
                 diagramData.appState?.viewBackgroundColor || "#ffffff",
               ...viewport,
             },
+            scrollToContent: true,
           }}
           theme="dark"
         />
