@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/diagrams/:path*", "destination": "/diagrams/:path*" },
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
