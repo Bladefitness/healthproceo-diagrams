@@ -35,6 +35,33 @@ function DiagramIndex() {
   );
 }
 
+function computeViewport(elements) {
+  const visible = elements.filter((el) => !el.isDeleted);
+  if (visible.length === 0) return {};
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const el of visible) {
+    minX = Math.min(minX, el.x);
+    minY = Math.min(minY, el.y);
+    maxX = Math.max(maxX, el.x + (el.width || 0));
+    maxY = Math.max(maxY, el.y + (el.height || 0));
+  }
+
+  const contentW = maxX - minX;
+  const contentH = maxY - minY;
+  const centerX = minX + contentW / 2;
+  const centerY = minY + contentH / 2;
+
+  // Zoom to fit with padding (assume ~1200x800 viewport)
+  const zoom = Math.min(0.8, 1100 / contentW, 700 / contentH);
+
+  return {
+    scrollX: -centerX + 600 / zoom,
+    scrollY: -centerY + 400 / zoom,
+    zoom: { value: zoom },
+  };
+}
+
 function DiagramViewer({ name }) {
   const [diagramData, setDiagramData] = useState(null);
   const [error, setError] = useState(null);
@@ -51,15 +78,17 @@ function DiagramViewer({ name }) {
 
   const handleExcalidrawAPI = useCallback((api) => {
     if (api) {
-      // Give elements time to render, then scroll to fit them all
       setTimeout(() => {
         api.scrollToContent(api.getSceneElements(), { fitToContent: true });
-      }, 300);
+      }, 500);
     }
   }, []);
 
   if (error) return <div className="error">{error}</div>;
   if (!diagramData) return <div className="loading">Loading diagram...</div>;
+
+  const elements = diagramData.elements || [];
+  const viewport = computeViewport(elements);
 
   return (
     <div className="viewer-container">
@@ -71,11 +100,12 @@ function DiagramViewer({ name }) {
         <Excalidraw
           excalidrawAPI={handleExcalidrawAPI}
           initialData={{
-            elements: diagramData.elements || [],
+            elements,
             appState: {
               ...(diagramData.appState || {}),
               viewBackgroundColor:
                 diagramData.appState?.viewBackgroundColor || "#ffffff",
+              ...viewport,
             },
           }}
           theme="dark"
