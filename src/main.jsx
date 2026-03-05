@@ -110,7 +110,7 @@ function DiagramViewer({ name }) {
             },
             scrollToContent: true,
           }}
-          theme="dark"
+          theme="light"
         />
       </div>
     </div>
