@@ -108,6 +108,7 @@ function DiagramViewer({ name }) {
                 diagramData.appState?.viewBackgroundColor || "#ffffff",
               ...viewport,
             },
+            files: diagramData.files || {},
             scrollToContent: true,
           }}
           theme="light"
